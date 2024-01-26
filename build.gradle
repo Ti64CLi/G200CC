@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+tasks.withType(JavaCompile) {
+    options.release = 21
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs = ["src/test/java"]
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    antlr "org.antlr:antlr4:4.11.1"
+}
+
+tasks.generateGrammarSource {
+    maxHeapSize = "64m"
+	outputDirectory = file("src/main/java/antlr/")
+    arguments += ["-visitor"]
+}

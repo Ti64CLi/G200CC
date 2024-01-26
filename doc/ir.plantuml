@@ -1,0 +1,46 @@
+
+@startuml
+class IRTopLevel
+class IRFunction{
+String name
+}
+class IRBlock {
+ void addTerminator(IRTerminator)
+ IRTerminator getTerminator()
+}
+class IROperation {
+ void addOperand(IRValue)
+}
+class IRInstruction
+class IRTerminator
+class IRPhiOperation
+
+class IRValue {
+ IRType type
+}
+
+IROperation <|-- IRInstruction
+IROperation <|-- IRTerminator
+IROperation <|-- IRPhiOperation
+
+IRInstruction <|-- IRAddInstruction
+IRInstruction <|-- IRMulInstruction
+IRInstruction <|-- IRLoadInstruction
+IRInstruction <|-- IRStoreInstruction
+IRInstruction <|-- IRAllocaInstruction
+IRInstruction <|-- IRGetElementPtrInstruction
+
+IRTerminator <|-- IRGoto
+IRTerminator <|-- IRCondBr
+
+
+IRTopLevel *-- "many" IRFunction : funcs
+IRFunction *-- "many" IRBlock : blocks
+IRBlock o-- "many" IRBlock : preds
+IRBlock *-- "many" IROperation : ops
+IROperation o-- "many" IRValue : operands
+IROperation *-- "1" IRValue : result
+IRValue o-- "many" IROperation : uses
+IRTerminator o-- "many" IRBlock : successors 
+
+@enduml
