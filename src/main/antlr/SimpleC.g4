@@ -4,44 +4,60 @@ grammar SimpleC;
     package antlr;
 }
 
-IDENTIFIER : [a-zA-Z]+ [0-9a-zA-Z]*;
-INTEGER : '-'? [0-9]+;
+IDENTIFIER: [a-zA-Z]+ [0-9a-zA-Z]*;
+INTEGER: '-'? [0-9]+;
 
-WS  :   ( ' ' | '\t' | '\r' '\n' | '\n' ) -> skip;
+WS: ( ' ' | '\t' | '\r' '\n' | '\n') -> skip;
 
+translationUnit: functionDefinition+;
 
+functionDefinition:
+	returnType = type name = IDENTIFIER '(' (
+		args += functionArgument ','
+	)* args += functionArgument? ')' body = blockStatement;
 
-translationUnit : functionDefinition+;
+functionArgument:
+	argType = type name = IDENTIFIER ('[' size = INTEGER ']')?;
 
-functionDefinition : returnType=type name=IDENTIFIER '(' (args+=functionArgument ',')* args+=functionArgument? ')' body=blockStatement ;
+type:
+	'void'				# VoidType
+	| 'int'				# IntType
+	| 'unsigned int'	# UintType;
 
-functionArgument : argType=type name=IDENTIFIER ('[' size=INTEGER ']')?;
+statement:
+	blockStatement
+	| controlStatement
+	| expressionStatement
+	| returnStatement;
 
-type : 'void'  	#VoidType
-	| 'int' 	#IntType
-	| 'unsigned int'  	#UintType;
-
-statement : blockStatement | expressionStatement | returnStatement;
-
-blockStatement : '{' statements+=statement* '}';
+blockStatement: '{' statements += statement* '}';
 
 //TODO: add statements for var def/var decl/var assign/if/for/while
 
-returnStatement : 'return' expr=expression?';';
+returnStatement: 'return' expr = expression? ';';
 
-expressionStatement : expr=expression ';';
+expressionStatement: expr = expression ';';
 
-expression : expr1=expression '+' expr2=expression  #AddExpr
-		| expr1=expression '-' expr2=expression 	#SubExpr 
-		| expr1=expression '*' expr2=expression 	#MulExpr 
-		| expr1=expression '/' expr2=expression 	#DivExpr
-		| expr1=expression '<' expr2=expression 	#CmpLtExpr
-		| expr1=expression '>' expr2=expression 	#CmpGtExpr		
-		|'-' expr1=expression					#OppExpr
-	    | '(' expr1=expression ')' 		    #ExprNode
-		| name=IDENTIFIER 					#IdNode
-		| functionCall                  #functionCallExpr
-		| INTEGER 						#IntNode;
-		
-           
-functionCall : name=IDENTIFIER '(' (args+=expression ',')* args+=expression? ')';
+expression:
+	expr1 = expression '+' expr2 = expression		# AddExpr
+	| expr1 = expression '-' expr2 = expression		# SubExpr
+	| expr1 = expression '*' expr2 = expression		# MulExpr
+	| expr1 = expression '/' expr2 = expression		# DivExpr
+	| expr1 = expression '<' expr2 = expression		# CmpLtExpr
+	| expr1 = expression '>' expr2 = expression		# CmpGtExpr
+	| expr1 = expression '==' expr2 = expression	# EqExpr
+	| expr1 = expression '!=' expr2 = expression	# NEqExpr
+	| '-' expr1 = expression						# OppExpr
+	| '(' expr1 = expression ')'					# ExprNode
+	| name = IDENTIFIER								# IdNode
+	| functionCall									# functionCallExpr
+	| INTEGER										# IntNode;
+
+functionCall:
+	name = IDENTIFIER '(' (args += expression ',')* args += expression? ')';
+
+controlStatement: ifStatement;
+
+ifStatement:
+	'if' '(' condExpr = expression ')' thenBody = blockStatement else = elseStatement?;
+elseStatement: 'else' elseBody = blockStatement;
