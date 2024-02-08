@@ -54,7 +54,7 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 		for (ParseTree child : ctx.statements) {
 			result += visit(child);
 		}
-		return result + "}";
+		return result + "}\n";
 	}
 
 	@Override
@@ -64,17 +64,7 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitExpressionStatement(SimpleCParser.ExpressionStatementContext ctx) {
-		return visit(ctx.expr) + ";";
-	}
-
-	@Override
-	public String visitIfStatement(SimpleCParser.IfStatementContext ctx) {
-		return "if (" + visit(ctx.condExpr) + ")" + visit(ctx.thenBody) + visit(ctx.else_);
-	}
-
-	@Override
-	public String visitElseStatement(SimpleCParser.ElseStatementContext ctx) {
-		return "else" + visit(ctx.elseBody);
+		return visit(ctx.expr) + ";\n";
 	}
 
 	@Override
@@ -137,6 +127,42 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 			result += ", " + visit(ctx.args.get(child));
 		}
 		return result + ")";
+	}
+
+	@Override
+	public String visitVariableDeclarationStatement(SimpleCParser.VariableDeclarationStatementContext ctx) {
+		return visit(ctx.variableType) + " " + ctx.id.getText() + ";\n";
+	}
+
+	@Override
+	public String visitVariableDefinition(SimpleCParser.VariableDefinitionContext ctx) {
+		return visit(ctx.variableType) + " " + ctx.id.getText() + " = " + visit(ctx.expr);
+	}
+
+	@Override
+	public String visitVariableAssignation(SimpleCParser.VariableAssignationContext ctx) {
+		return ctx.id.getText() + " = " + visit(ctx.expr);
+	}
+
+	@Override
+	public String visitIfStatement(SimpleCParser.IfStatementContext ctx) {
+		return "if (" + visit(ctx.condExpr) + ") " + visit(ctx.thenBody) + visit(ctx.else_);
+	}
+
+	@Override
+	public String visitElseStatement(SimpleCParser.ElseStatementContext ctx) {
+		return "else " + visit(ctx.elseBody);
+	}
+
+	@Override
+	public String visitForStatement(SimpleCParser.ForStatementContext ctx) {
+		return "for (" + visit(ctx.initVar) + "; " + visit(ctx.condExpr) + "; " + visit(ctx.incrExpr) + ") "
+				+ visit(ctx.forBody);
+	}
+	
+	@Override
+	public String visitWhileStatement(SimpleCParser.WhileStatementContext ctx) {
+		return "while (" + visit(ctx.condExpr) + ") " + visit(ctx.whileBody);
 	}
 
 }

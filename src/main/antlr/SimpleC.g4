@@ -26,6 +26,7 @@ type:
 
 statement:
 	blockStatement
+	| variableDeclarationStatement
 	| controlStatement
 	| expressionStatement
 	| returnStatement;
@@ -51,13 +52,28 @@ expression:
 	| '(' expr1 = expression ')'					# ExprNode
 	| name = IDENTIFIER								# IdNode
 	| functionCall									# functionCallExpr
-	| INTEGER										# IntNode;
+	| INTEGER										# IntNode
+	| variableAssignation							# VarAssignExpr
+	| variableDefinition							# VarDefExpr;
 
 functionCall:
 	name = IDENTIFIER '(' (args += expression ',')* args += expression? ')';
 
-controlStatement: ifStatement;
+variableDeclarationStatement:
+	variableType = type id = IDENTIFIER ';';
+variableDefinition:
+	variableType = type id = IDENTIFIER '=' expr = expression;
+variableAssignation: id = IDENTIFIER '=' expr = expression;
+
+controlStatement: ifStatement | forStatement | whileStatement;
 
 ifStatement:
 	'if' '(' condExpr = expression ')' thenBody = blockStatement else = elseStatement?;
 elseStatement: 'else' elseBody = blockStatement;
+
+forStatement:
+	'for' '(' initVar = expression ';' condExpr = expression ';' incrExpr = expression ')' forBody =
+		blockStatement;
+
+whileStatement:
+	'while' '(' condExpr = expression ')' whileBody = blockStatement;
