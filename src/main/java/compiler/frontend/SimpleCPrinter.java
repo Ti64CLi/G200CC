@@ -130,8 +130,8 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 	}
 
 	@Override
-	public String visitVariableDeclarationStatement(SimpleCParser.VariableDeclarationStatementContext ctx) {
-		return visit(ctx.variableType) + " " + ctx.id.getText() + ";\n";
+	public String visitVariableDeclaration(SimpleCParser.VariableDeclarationContext ctx) {
+		return visit(ctx.variableType) + " " + ctx.id.getText();
 	}
 
 	@Override

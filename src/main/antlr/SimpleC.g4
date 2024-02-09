@@ -26,7 +26,6 @@ type:
 
 statement:
 	blockStatement
-	| variableDeclarationStatement
 	| controlStatement
 	| expressionStatement
 	| returnStatement;
@@ -53,14 +52,14 @@ expression:
 	| name = IDENTIFIER								# IdNode
 	| functionCall									# functionCallExpr
 	| INTEGER										# IntNode
+	| variableDeclaration							# VarDeclExpr
 	| variableAssignation							# VarAssignExpr
 	| variableDefinition							# VarDefExpr;
 
 functionCall:
 	name = IDENTIFIER '(' (args += expression ',')* args += expression? ')';
 
-variableDeclarationStatement:
-	variableType = type id = IDENTIFIER ';';
+variableDeclaration: variableType = type id = IDENTIFIER;
 variableDefinition:
 	variableType = type id = IDENTIFIER '=' expr = expression;
 variableAssignation: id = IDENTIFIER '=' expr = expression;
