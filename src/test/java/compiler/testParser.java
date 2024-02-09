@@ -34,7 +34,7 @@ class testParser {
 
 	@Test
 	void testParserFact() {
-		testPattern("src/test/resources/add.sc");
+		testPattern("src/test/resources/fact.sc");
 	}
 	
 	@Test
