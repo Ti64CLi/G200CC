@@ -3,75 +3,77 @@ package compiler.frontend;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 public class SymbolTableLevel {
-    private HashMap<String, SymbolTableEntry> entries;
-    private ArrayList<SymbolTable> children;
+	private HashMap<String, SymbolTableEntry> level;
+	private ArrayList<SymbolTableLevel> children;
+	private SymbolTableLevel parent;
 
-    /**
-     * Constructor for SymbolTableLevel. Initializes entries and children as empty ArrayLists
-     */
-    public SymbolTableLevel() {
-        entries = new HashMap<String, SymbolTableEntry>();
-        children = new ArrayList<SymbolTable>();
-    }
+	/**
+	 * SymbolTableLevel constructor
+	 */
+	public SymbolTableLevel() {
+		this.level = new HashMap<String, SymbolTableEntry>();
+		this.children = new ArrayList<SymbolTableLevel>();
+		this.parent = null;
+	}
 
-    /**
-     * Insert an entry into the symbol table
-     * @param entry SymbolTableEntry
-     */
-    public void insertSymbolTableEntry(SymbolTableEntry entry) {
-        if (this.getSymbolTableEntry(entry.id) == null) {
-            this.entries.put(entry.id, entry);
-        }
-        else {
-            throw new RuntimeException("SymbolTableLevel Error: " + entry.id + " already declared in this scope");
-        }
-    }
+	/**
+	 * Initialize a new level in the SymbolTable
+	 * 
+	 * @param parent : the parent of the level being created
+	 * @param ctx    : the current context
+	 * @return the new level created
+	 */
+	public SymbolTableLevel initializeLevel(SymbolTableLevel parent, ParserRuleContext ctx) {
+		this.parent = parent;
+		if (this.parent != null) {
+			this.parent.children.add(this);
+		}
 
-    /**
-     * Lookup an entry in the SymbolTableLevel
-     * @param id String
-     * @return SymbolTableEntry or null if not found
-     */
-    public SymbolTableEntry getSymbolTableEntry(String id) {
-        for (SymbolTableEntry entry : this.entries.values()) {
-            if (entry.id.equals(id)) {
-                return entry;
-            }
-        }
-        return null;
-    }
+		return this;
+	}
 
-    /**
-     * Get the size of the SymbolTableEntry list
-     * @return int
-     */
-    public int getSymbolTableEntrySize() {
-        return this.entries.size();
-    }
+	/**
+	 * Getter for the parent level
+	 * 
+	 * @return the parent of the current level
+	 */
+	public SymbolTableLevel getParent() {
+		return this.parent;
+	}
 
-    /**
-     * Insert a child into the symbol table
-     * @param child SymbolTable
-     */
-    public void insertSymbolTable(SymbolTable child) {
-        this.children.add(child);
-    }
+	/**
+	 * Insert a new symbol in the symbol table level. Fail if symbol already in the
+	 * current level
+	 * 
+	 * @param name : symbol to insert
+	 * @return inserted entry
+	 */
+	public SymbolTableEntry insert(String name) {
+		assert (!this.level.containsKey(name));
 
-    /**
-     * Get the SymbolTable at index index
-     * @param index int
-     * @return SymbolTable
-     */
-    public SymbolTable getSymbolTable(int index) {
-        return this.children.get(index);
-    }
+		SymbolTableEntry newEntry = new SymbolTableEntry(name);
+		this.level.put(name, newEntry);
 
-    /**
-     * Get the size of the SymbolTable list
-     * @return int
-     */
-    public int getSymbolTableSize() {
-        return this.children.size();
-    }
-}
+		return newEntry;
+	}
+
+	/**
+	 * Look up for the given entry in the current level
+	 * 
+	 * @param name : symbol to look for
+	 * @return the corresponding entry or null if not found
+	 */
+	public SymbolTableEntry lookup(String name) {
+		if (this.level.containsKey(name)) {
+			return this.level.get(name);
+		} else {
+			if (this.parent == null) {
+				return null;
+			} else 
+				return this.parent.lookup(name);
+			}
+		}
+}}
