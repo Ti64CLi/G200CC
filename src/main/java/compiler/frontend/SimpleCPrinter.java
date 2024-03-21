@@ -156,10 +156,10 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitForStatement(SimpleCParser.ForStatementContext ctx) {
-		return "for (" + visit(ctx.initVar) + "; " + visit(ctx.condExpr) + "; " + visit(ctx.incrExpr) + ") "
+		return "for (" + visit(ctx.initExpr) + "; " + visit(ctx.condExpr) + "; " + visit(ctx.incrExpr) + ") "
 				+ visit(ctx.forBody);
 	}
-	
+
 	@Override
 	public String visitWhileStatement(SimpleCParser.WhileStatementContext ctx) {
 		return "while (" + visit(ctx.condExpr) + ") " + visit(ctx.whileBody);
