@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import ir.core.IRType;
+
 public class SymbolTable {
 	private SymbolTableLevel currentLevel;
 	private HashMap<ParserRuleContext, SymbolTableLevel> contexts;
@@ -13,7 +15,7 @@ public class SymbolTable {
 	 */
 	public SymbolTable() {
 		// constructor
-		this.currentLevel = null;
+		this.currentLevel = new SymbolTableLevel();
 		this.contexts = new HashMap<ParserRuleContext, SymbolTableLevel>();
 	}
 
@@ -45,8 +47,8 @@ public class SymbolTable {
 	 * @param name : new symbol to insert
 	 * @return the entry created
 	 */
-	public SymbolTableEntry insert(String name) {
-		return this.currentLevel.insert(name);
+	public SymbolTableEntry insert(String name, IRType type, boolean isFunction) {
+		return this.currentLevel.insert(name, type, isFunction);
 	}
 
 	/**
