@@ -59,6 +59,7 @@ expression:
 functionCall:
 	name = IDENTIFIER '(' (args += expression ',')* args += expression? ')';
 
+// TODO : support multiple variable declaration and definition
 variableDeclaration: variableType = type id = IDENTIFIER;
 variableDefinition:
 	variableType = type id = IDENTIFIER '=' expr = expression;
