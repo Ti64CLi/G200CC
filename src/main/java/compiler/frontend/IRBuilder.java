@@ -178,8 +178,8 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	// TODO: varDecl / varDef / varAssign
 	@Override
-	public BuilderResult visitVariableDeclaration(VariableDeclarationContext) {
-		return 
+	public BuilderResult visitVariableDeclaration(VariableDeclarationContext ctx) {
+		return null;
 	}
 
 	@Override

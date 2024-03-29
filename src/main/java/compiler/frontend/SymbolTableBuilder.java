@@ -9,7 +9,9 @@ import antlr.SimpleCBaseVisitor;
 import antlr.SimpleCParser;
 import antlr.SimpleCParser.*;
 import compiler.frontend.SymbolTable;
+import ir.core.IROperation;
 import ir.core.IRType;
+import ir.core.IRValue;
 
 public class SymbolTableBuilder extends SimpleCBaseVisitor<Void> {
 	protected SymbolTable symbolTable;
@@ -42,7 +44,7 @@ public class SymbolTableBuilder extends SimpleCBaseVisitor<Void> {
 
 	@Override
 	public Void visitFunctionDefinition(FunctionDefinitionContext ctx) {
-		this.symbolTable.insert(ctx.name.getText(), this.translateType(ctx.returnType), true);
+		this.symbolTable.insert(ctx.name.getText(), new IRValue(this.translateType(ctx.returnType), null), true);
 
 		for (FunctionArgumentContext argument : ctx.args) {
 			visit(argument);
@@ -55,7 +57,7 @@ public class SymbolTableBuilder extends SimpleCBaseVisitor<Void> {
 
 	@Override
 	public Void visitFunctionArgument(FunctionArgumentContext ctx) {
-		this.symbolTable.insert(ctx.name.getText(), this.translateType(ctx.argType), false);
+		this.symbolTable.insert(ctx.name.getText(), new IRValue(this.translateType(ctx.argType), null), false);
 
 		return null;
 	}
@@ -96,7 +98,7 @@ public class SymbolTableBuilder extends SimpleCBaseVisitor<Void> {
 	@Override
 	public Void visitVariableDeclaration(VariableDeclarationContext ctx) {
 		// TODO : manage errors/warnings
-		this.symbolTable.insert(ctx.id.getText(), translateType(ctx.variableType), false);
+		this.symbolTable.insert(ctx.id.getText(), new IRValue(translateType(ctx.variableType), null), false);
 
 		return null;
 	}
@@ -104,7 +106,7 @@ public class SymbolTableBuilder extends SimpleCBaseVisitor<Void> {
 	@Override
 	public Void visitVariableDefinition(VariableDefinitionContext ctx) {
 		// TODO : manage errors/warnings
-		this.symbolTable.insert(ctx.id.getText(), translateType(ctx.variableType), false);
+		this.symbolTable.insert(ctx.id.getText(), new IRValue(translateType(ctx.variableType), null), false);
 
 		visit(ctx.expr);
 
