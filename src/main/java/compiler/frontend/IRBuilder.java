@@ -179,7 +179,9 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	// TODO: varDecl / varDef / varAssign
 	@Override
 	public BuilderResult visitVariableDeclaration(VariableDeclarationContext ctx) {
-		return null;
+		this.symbolTable.insert(ctx.id.getText(), new IRValue(translateType(ctx.variableType), null), false);
+
+		return new BuilderResult(false, null, null, null);
 	}
 
 	@Override
