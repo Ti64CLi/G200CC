@@ -26,6 +26,7 @@ import antlr.SimpleCParser.SubExprContext;
 import antlr.SimpleCParser.TypeContext;
 import antlr.SimpleCParser.UintTypeContext;
 import antlr.SimpleCParser.VariableDeclarationContext;
+import antlr.SimpleCParser.VariableDefinitionContext;
 import antlr.SimpleCParser.VoidTypeContext;
 import ir.core.IRBlock;
 import ir.core.IRFunction;
@@ -180,6 +181,16 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	@Override
 	public BuilderResult visitVariableDeclaration(VariableDeclarationContext ctx) {
 		this.symbolTable.insert(ctx.id.getText(), new IRValue(translateType(ctx.variableType), null), false);
+
+		return new BuilderResult(false, null, null, null);
+	}
+
+	@Override
+	public BuilderResult visitVariableDefinition(VariableDefinitionContext ctx) {
+		BuilderResult res = ctx.expr.accept(this);
+		IRValue varValue = res.value;
+		varValue.type = translateType(ctx.type());
+		this.symbolTable.insert(ctx.id.getText(), varValue, false);
 
 		return new BuilderResult(false, null, null, null);
 	}
