@@ -1,6 +1,6 @@
 package compiler.frontend;
 
-import ir.core.IRType;
+import ir.core.IRValue;
 
 public class SymbolTableEntry {
 	public static enum ObjectType {
@@ -8,13 +8,13 @@ public class SymbolTableEntry {
 		VARIABLE
 	}
 
-	private final String id;
-	private final IRType entryType;
-	private final ObjectType objectType;
+	private String name;
+	private IRValue value;
+	private ObjectType objectType;
 
-	public SymbolTableEntry(String id, IRType type, boolean isFunction) {
-		this.id = id;
-		this.entryType = type;
+	public SymbolTableEntry(String name, IRValue value, boolean isFunction) {
+		this.name = name;
+		this.value = value;
 
 		if (isFunction) {
 			this.objectType = ObjectType.FUNCTION;
@@ -22,15 +22,15 @@ public class SymbolTableEntry {
 			this.objectType = ObjectType.VARIABLE;
 		}
 	}
-	
-	public String getId() {
-		return this.id;
+
+	public IRValue getIRValue() {
+		return this.value;
 	}
-	
-	public IRType getEntryType() {
-		return this.entryType;
+
+	public String getName() {
+		return this.name;
 	}
-	
+
 	public ObjectType getObjectType() {
 		return this.objectType;
 	}

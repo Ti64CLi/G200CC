@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import ir.core.IRType;
+import ir.core.IRValue;
 
 public class SymbolTableLevel {
 	private HashMap<String, SymbolTableEntry> level;
@@ -53,10 +53,10 @@ public class SymbolTableLevel {
 	 * @param name : symbol to insert
 	 * @return inserted entry
 	 */
-	public SymbolTableEntry insert(String name, IRType type, boolean isFunction) {
+	public SymbolTableEntry insert(String name, IRValue value, boolean isFunction) {
 		assert (!this.level.containsKey(name));
 
-		SymbolTableEntry newEntry = new SymbolTableEntry(name, type, isFunction);
+		SymbolTableEntry newEntry = new SymbolTableEntry(name, value, isFunction);
 		this.level.put(name, newEntry);
 
 		return newEntry;
