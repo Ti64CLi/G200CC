@@ -72,8 +72,11 @@ ifStatement:
 elseStatement: 'else' elseBody = blockStatement;
 
 forStatement:
-	'for' '(' initExpr = expression ';' condExpr = expression ';' incrExpr = expression ')' forBody
-		= blockStatement;
+	'for' '(' initExpr = expression? ';' condExpr = expression? ';' incrExpr = expression? ')'
+		forBody = blockStatement;
 
 whileStatement:
 	'while' '(' condExpr = expression ')' whileBody = blockStatement;
+
+doWhileStatement:
+	'do' doWhileBody = blockStatement 'while' '(' condExpr = expression ')' ';';
