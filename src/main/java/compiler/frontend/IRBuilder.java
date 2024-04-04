@@ -12,10 +12,12 @@ import antlr.SimpleCParser.CmpLtExprContext;
 import antlr.SimpleCParser.DivExprContext;
 import antlr.SimpleCParser.ExprNodeContext;
 import antlr.SimpleCParser.ExpressionContext;
+import antlr.SimpleCParser.ForStatementContext;
 import antlr.SimpleCParser.FunctionArgumentContext;
 import antlr.SimpleCParser.FunctionCallContext;
 import antlr.SimpleCParser.FunctionDefinitionContext;
 import antlr.SimpleCParser.IdNodeContext;
+import antlr.SimpleCParser.IfStatementContext;
 import antlr.SimpleCParser.IntNodeContext;
 import antlr.SimpleCParser.IntTypeContext;
 import antlr.SimpleCParser.MulExprContext;
@@ -25,9 +27,11 @@ import antlr.SimpleCParser.StatementContext;
 import antlr.SimpleCParser.SubExprContext;
 import antlr.SimpleCParser.TypeContext;
 import antlr.SimpleCParser.UintTypeContext;
+import antlr.SimpleCParser.VariableAssignationContext;
 import antlr.SimpleCParser.VariableDeclarationContext;
 import antlr.SimpleCParser.VariableDefinitionContext;
 import antlr.SimpleCParser.VoidTypeContext;
+import antlr.SimpleCParser.WhileStatementContext;
 import ir.core.IRBlock;
 import ir.core.IRFunction;
 import ir.core.IRTopLevel;
@@ -135,6 +139,26 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	}
 
 	/****************************************************************************
+	 * Control flow statements
+	 * 
+	 ****************************************************************************/
+
+	@Override
+	public BuilderResult visitIfStatement(IfStatementContext ctx) {
+		return null;
+	}
+
+	@Override
+	public BuilderResult visitForStatement(ForStatementContext ctx) {
+		return null;
+	}
+
+	@Override
+	public BuilderResult visitWhileStatement(WhileStatementContext ctx) {
+		return null;
+	}
+
+	/****************************************************************************
 	 * Return/call statements
 	 * 
 	 ****************************************************************************/
@@ -193,6 +217,14 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		this.symbolTable.insert(ctx.id.getText(), varValue, false);
 
 		return new BuilderResult(false, null, null, null);
+	}
+
+	@Override
+	public BuilderResult visitVariableAssignation(VariableAssignationContext ctx) {
+		BuilderResult res = ctx.expr.accept(this);
+		IRValue varValue = res.value;
+
+		return new BuilderResult(false, null, null, varValue);
 	}
 
 	@Override
