@@ -165,4 +165,9 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 		return "while (" + visit(ctx.condExpr) + ") " + visit(ctx.whileBody);
 	}
 
+	@Override
+	public String visitDoWhileStatement(SimpleCParser.DoWhileStatementContext ctx) {
+		return "do " + visit(ctx.doWhileBody) + " while (" + visit(ctx.condExpr) + ");";
+	}
+
 }
