@@ -10,6 +10,7 @@ import antlr.SimpleCParser.BlockStatementContext;
 import antlr.SimpleCParser.CmpGtExprContext;
 import antlr.SimpleCParser.CmpLtExprContext;
 import antlr.SimpleCParser.DivExprContext;
+import antlr.SimpleCParser.DoWhileStatementContext;
 import antlr.SimpleCParser.ExprNodeContext;
 import antlr.SimpleCParser.ExpressionContext;
 import antlr.SimpleCParser.ForStatementContext;
@@ -45,6 +46,7 @@ import ir.instruction.IRDivInstruction;
 import ir.instruction.IRFunctionCallInstruction;
 import ir.instruction.IRMulInstruction;
 import ir.instruction.IRSubInstruction;
+import ir.terminator.IRCondBr;
 import ir.terminator.IRGoto;
 import ir.terminator.IRReturn;
 
@@ -145,7 +147,26 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	@Override
 	public BuilderResult visitIfStatement(IfStatementContext ctx) {
-		return null;
+		IRBlock in = createBlock(currentFunction);
+		IRBlock out = createBlock(currentFunction);
+		currentBlock = in;
+
+		BuilderResult cond = this.visit(ctx.condExpr);
+		BuilderResult thenBody = this.visit(ctx.thenBody);
+		BuilderResult elseBody = this.visit(ctx.else_);
+
+		if (cond.hasBlock) {
+			in.addTerminator(new IRGoto(cond.entry));
+			currentBlock = cond.exit;
+		}
+
+		currentBlock.addTerminator(new IRCondBr(cond.value, thenBody.entry, elseBody.entry));
+		thenBody.exit.addTerminator(new IRGoto(out)); // TODO : Add support for non-block statement then and else later
+		elseBody.exit.addTerminator(new IRGoto(out));
+
+		currentBlock = out;
+
+		return new BuilderResult(true, in, currentBlock, null);
 	}
 
 	@Override
@@ -155,6 +176,11 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	@Override
 	public BuilderResult visitWhileStatement(WhileStatementContext ctx) {
+		return null;
+	}
+
+	@Override
+	public BuilderResult visitDoWhileStatement(DoWhileStatementContext ctx) {
 		return null;
 	}
 
@@ -345,5 +371,4 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	private IRBlock createBlock(IRFunction f) {
 		return f.addBlock();
 	}
-
 }
