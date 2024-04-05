@@ -3,6 +3,8 @@ package compiler.frontend;
 import java.util.ArrayList;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import com.ibm.icu.impl.SimpleFilteredSentenceBreakIterator.Builder;
+
 import antlr.SimpleCBaseVisitor;
 import antlr.SimpleCParser;
 import antlr.SimpleCParser.AddExprContext;
@@ -210,7 +212,23 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	@Override
 	public BuilderResult visitWhileStatement(WhileStatementContext ctx) {
-		return null;
+		IRBlock in = createBlock(currentFunction);
+		IRBlock out = createBlock(currentFunction);
+
+		currentBlock = in;
+
+		BuilderResult condResult = this.visit(ctx.condExpr);
+		if (condResult.hasBlock) {
+			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			currentBlock = condResult.exit;
+		}
+
+		BuilderResult whileBodyResult = this.visit(ctx.whileBody); // TODO : Add support for non-block statement while
+		currentBlock.addTerminator(new IRCondBr(condResult.value, whileBodyResult.entry, out));
+
+		currentBlock = out;
+
+		return new BuilderResult(true, in, currentBlock, null);
 	}
 
 	@Override
