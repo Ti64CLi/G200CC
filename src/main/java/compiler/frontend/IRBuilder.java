@@ -152,18 +152,19 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		currentBlock = in;
 
-		BuilderResult cond = this.visit(ctx.condExpr);
-		if (cond.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(cond.entry));
-			currentBlock = cond.exit;
+		BuilderResult condResult = this.visit(ctx.condExpr);
+		if (condResult.hasBlock) {
+			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			currentBlock = condResult.exit;
 		}
 
-		BuilderResult thenBody = this.visit(ctx.thenBody);
-		BuilderResult elseBody = this.visit(ctx.else_);
+		BuilderResult thenBodyResult = this.visit(ctx.thenBody);
+		BuilderResult elseBodyResult = this.visit(ctx.else_);
 
-		currentBlock.addTerminator(new IRCondBr(cond.value, thenBody.entry, elseBody.entry));
-		thenBody.exit.addTerminator(new IRGoto(out)); // TODO : Add support for non-block statement then and else later
-		elseBody.exit.addTerminator(new IRGoto(out));
+		currentBlock.addTerminator(new IRCondBr(condResult.value, thenBodyResult.entry, elseBodyResult.entry));
+		thenBodyResult.exit.addTerminator(new IRGoto(out)); // TODO : Add support for non-block statement then and else
+															// later
+		elseBodyResult.exit.addTerminator(new IRGoto(out));
 
 		currentBlock = out;
 
@@ -177,28 +178,30 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		currentBlock = in;
 
-		BuilderResult init = this.visit(ctx.initExpr);
-		if (init.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(init.entry));
-			currentBlock = init.exit;
+		BuilderResult initResult = this.visit(ctx.initExpr);
+		if (initResult.hasBlock) {
+			currentBlock.addTerminator(new IRGoto(initResult.entry));
+			currentBlock = initResult.exit;
 		}
 
-		BuilderResult cond = this.visit(ctx.condExpr);
-		if (cond.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(cond.entry));
-			currentBlock = cond.exit;
+		BuilderResult condResult = this.visit(ctx.condExpr);
+		if (condResult.hasBlock) {
+			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			currentBlock = condResult.exit;
 		}
 
-		BuilderResult forBody = this.visit(ctx.forBody); // TODO : Add support for non-block statement for
-		currentBlock = forBody.exit;
+		IRBlock condExitBlock = currentBlock;
 
-		BuilderResult incr = this.visit(ctx.incrExpr);
-		if (incr.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(incr.entry));
-			currentBlock = incr.exit;
+		BuilderResult forBodyResult = this.visit(ctx.forBody); // TODO : Add support for non-block statement for
+		currentBlock = forBodyResult.exit;
+
+		BuilderResult incrResult = this.visit(ctx.incrExpr);
+		if (incrResult.hasBlock) {
+			currentBlock.addTerminator(new IRGoto(incrResult.entry));
+			currentBlock = incrResult.exit;
 		}
 
-		currentBlock.addTerminator(new IRCondBr(cond.value, forBody.entry, out));
+		condExitBlock.addTerminator(new IRCondBr(condResult.value, forBodyResult.entry, out));
 
 		currentBlock = out;
 
