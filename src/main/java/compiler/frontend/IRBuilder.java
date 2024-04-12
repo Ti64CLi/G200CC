@@ -160,13 +160,19 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 			currentBlock = condResult.exit;
 		}
 
+		IRBlock condBlock = currentBlock;
 		BuilderResult thenBodyResult = this.visit(ctx.thenBody);
-		BuilderResult elseBodyResult = this.visit(ctx.else_);
+		if (ctx.else_ != null) {
+			currentBlock = condBlock;
+			BuilderResult elseBodyResult = this.visit(ctx.else_);
+			elseBodyResult.exit.addTerminator(new IRGoto(out));
+			condBlock.addTerminator(new IRCondBr(condResult.value, thenBodyResult.entry, elseBodyResult.entry));
+		} else {
+			condBlock.addTerminator(new IRCondBr(condResult.value, thenBodyResult.entry, out));
+		}
 
-		currentBlock.addTerminator(new IRCondBr(condResult.value, thenBodyResult.entry, elseBodyResult.entry));
 		thenBodyResult.exit.addTerminator(new IRGoto(out)); // TODO : Add support for non-block statement then and else
 															// later
-		elseBodyResult.exit.addTerminator(new IRGoto(out));
 
 		currentBlock = out;
 
@@ -179,17 +185,22 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		IRBlock out = createBlock(currentFunction);
 
 		currentBlock = in;
-
-		BuilderResult initResult = this.visit(ctx.initExpr);
-		if (initResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(initResult.entry));
-			currentBlock = initResult.exit;
+		BuilderResult initResult = null;
+		if (ctx.initExpr != null) {
+			initResult = this.visit(ctx.initExpr);
+			if (initResult.hasBlock) {
+				currentBlock.addTerminator(new IRGoto(initResult.entry));
+				currentBlock = initResult.exit;
+			}
 		}
 
-		BuilderResult condResult = this.visit(ctx.condExpr);
-		if (condResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(condResult.entry));
-			currentBlock = condResult.exit;
+		BuilderResult condResult = null;
+		if (ctx.condExpr != null) {
+			condResult = this.visit(ctx.condExpr);
+			if (condResult.hasBlock) {
+				currentBlock.addTerminator(new IRGoto(condResult.entry));
+				currentBlock = condResult.exit;
+			}
 		}
 
 		IRBlock condExitBlock = currentBlock;
@@ -197,12 +208,19 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		BuilderResult forBodyResult = this.visit(ctx.forBody); // TODO : Add support for non-block statement for
 		currentBlock = forBodyResult.exit;
 
-		BuilderResult incrResult = this.visit(ctx.incrExpr);
-		if (incrResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(incrResult.entry));
-			currentBlock = incrResult.exit;
+		if (ctx.incrExpr != null) {
+			BuilderResult incrResult = this.visit(ctx.incrExpr);
+			if (incrResult.hasBlock) {
+				currentBlock.addTerminator(new IRGoto(incrResult.entry));
+				currentBlock = incrResult.exit;
+			}
 		}
 
+		if (ctx.condExpr != null) {
+			currentBlock.addTerminator(new IRGoto(condResult.entry));
+		} else {
+			currentBlock.addTerminator(new IRGoto(in));
+		}
 		condExitBlock.addTerminator(new IRCondBr(condResult.value, forBodyResult.entry, out));
 
 		currentBlock = out;
@@ -226,6 +244,8 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		IRBlock condExitBlock = currentBlock;
 
 		BuilderResult whileBodyResult = this.visit(ctx.whileBody); // TODO : Add support for non-block statement while
+
+		whileBodyResult.exit.addTerminator(new IRGoto(condResult.entry));
 		condExitBlock.addTerminator(new IRCondBr(condResult.value, whileBodyResult.entry, out));
 
 		currentBlock = out;
@@ -240,18 +260,17 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		currentBlock = in;
 
+		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody); // TODO : Add support for non-block
+																		// statement while
+
 		BuilderResult condResult = this.visit(ctx.condExpr);
 		if (condResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			currentBlock.addTerminator(
+					new IRGoto(condResult.entry));
 			currentBlock = condResult.exit;
 		}
 
-		IRBlock condExitBlock = currentBlock;
-
-		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody); // TODO : Add support for non-block
-																		// statement while
-		condExitBlock.addTerminator(new IRGoto(doWhileBodyResult.entry));
-		doWhileBodyResult.exit.addTerminator(new IRCondBr(condResult.value, doWhileBodyResult.entry, out));
+		currentBlock.addTerminator(new IRCondBr(condResult.value, doWhileBodyResult.entry, out));
 
 		currentBlock = out;
 
