@@ -203,7 +203,12 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 			}
 		}
 
+		IRBlock condEntryBlock = in;
 		IRBlock condExitBlock = currentBlock;
+
+		if (condResult != null && condResult.entry != null) {
+			condEntryBlock = condResult.entry;
+		}
 
 		BuilderResult forBodyResult = this.visit(ctx.forBody); // TODO : Add support for non-block statement for
 		currentBlock = forBodyResult.exit;
@@ -217,7 +222,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		}
 
 		if (ctx.condExpr != null) {
-			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			currentBlock.addTerminator(new IRGoto(condEntryBlock));
 		} else {
 			currentBlock.addTerminator(new IRGoto(in));
 		}
