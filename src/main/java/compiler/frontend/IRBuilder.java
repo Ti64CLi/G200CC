@@ -183,6 +183,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	public BuilderResult visitForStatement(ForStatementContext ctx) {
 		IRBlock in = createBlock(currentFunction);
 		IRBlock out = createBlock(currentFunction);
+		IRBlock inCond = createBlock(currentFunction);
 
 		currentBlock = in;
 		BuilderResult initResult = null;
@@ -193,7 +194,8 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 				currentBlock = initResult.exit;
 			}
 		}
-
+		currentBlock.addTerminator(new IRGoto(inCond));
+		currentBlock = inCond;
 		BuilderResult condResult = null;
 		if (ctx.condExpr != null) {
 			condResult = this.visit(ctx.condExpr);
@@ -203,7 +205,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 			}
 		}
 
-		IRBlock condEntryBlock = in;
+		IRBlock condEntryBlock = inCond;
 		IRBlock condExitBlock = currentBlock;
 
 		if (condResult != null && condResult.entry != null) {
