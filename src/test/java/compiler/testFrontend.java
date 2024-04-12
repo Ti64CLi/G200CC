@@ -22,6 +22,11 @@ class testFrontend {
 	}
 
 	@Test
+	void testIfWithoutElse() {
+		testPattern("src/test/resources/if_no_else.sc");
+	}
+
+	@Test
 	void testParserAdd() {
 		testPattern("src/test/resources/add.sc");
 	}
