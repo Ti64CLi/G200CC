@@ -146,7 +146,11 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitIfStatement(SimpleCParser.IfStatementContext ctx) {
-		return "if (" + visit(ctx.condExpr) + ") " + visit(ctx.thenBody) + visit(ctx.else_);
+		String res = "if (" + visit(ctx.condExpr) + ") " + visit(ctx.thenBody);
+		if (ctx.else_ != null) {
+			res += visit(ctx.else_);
+		}
+		return res;
 	}
 
 	@Override
@@ -156,8 +160,22 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitForStatement(SimpleCParser.ForStatementContext ctx) {
-		return "for (" + visit(ctx.initExpr) + "; " + visit(ctx.condExpr) + "; " + visit(ctx.incrExpr) + ") "
-				+ visit(ctx.forBody);
+		StringBuilder sb = new StringBuilder("for (");
+		if (ctx.initExpr != null){
+			sb.append(visit(ctx.initExpr));
+		}
+		sb.append(";");
+		if (ctx.condExpr != null) {
+			sb.append(" ");
+			sb.append(visit(ctx.condExpr));
+		}
+		sb.append(";");
+		if (ctx.incrExpr != null) {
+			sb.append(" ");
+			sb.append(visit(ctx.incrExpr));
+		}
+		sb.append(visit(ctx.forBody));
+		return sb.toString();
 	}
 
 	@Override

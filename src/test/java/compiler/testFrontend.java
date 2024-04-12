@@ -27,6 +27,9 @@ class testFrontend {
 	}
 
 	@Test
+	void testForNoVariables() { testPattern("src/test/resources/bare_for.sc"); }
+
+	@Test
 	void testIfWithoutElse() {
 		testPattern("src/test/resources/if_no_else.sc");
 	}
