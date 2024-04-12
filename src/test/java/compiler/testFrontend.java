@@ -17,8 +17,13 @@ class testFrontend {
 		String contentInit = Compiler.readFile(path);
 		ParseTree tree = Compiler.parse(contentInit);
 		IRTopLevel top = Compiler.frontend(tree);
-		IRExport.printIR(top);
+		System.out.println(IRExport.printIR(top));
 		assert (true);// Ok if no exception before
+	}
+
+	@Test
+	void testExamplePart2() {
+		testPattern("src/test/resources/example_part2.sc");
 	}
 
 	@Test
