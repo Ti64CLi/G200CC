@@ -223,8 +223,10 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 			currentBlock = condResult.exit;
 		}
 
+		IRBlock condExitBlock = currentBlock;
+
 		BuilderResult whileBodyResult = this.visit(ctx.whileBody); // TODO : Add support for non-block statement while
-		currentBlock.addTerminator(new IRCondBr(condResult.value, whileBodyResult.entry, out));
+		condExitBlock.addTerminator(new IRCondBr(condResult.value, whileBodyResult.entry, out));
 
 		currentBlock = out;
 
