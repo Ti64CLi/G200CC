@@ -65,7 +65,7 @@ variableDefinition:
 	variableType = type id = IDENTIFIER '=' expr = expression;
 variableAssignation: id = IDENTIFIER '=' expr = expression;
 
-controlStatement: ifStatement | forStatement | whileStatement | DoWhileStatement;
+controlStatement: ifStatement | forStatement | whileStatement | doWhileStatement;
 
 ifStatement:
 	'if' '(' condExpr = expression ')' thenBody = blockStatement else = elseStatement?;
