@@ -20,6 +20,11 @@ class testFrontend {
 		System.out.println(IRExport.printIR(top));
 		assert (true);// Ok if no exception before
 	}
+    
+    @Test
+    void testSimpleWhile() {
+        testPattern("src/test/resources/simple_while.sc");
+    }
 
 	@Test
 	void testExamplePart2() {
