@@ -267,8 +267,11 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		currentBlock = in;
 
-		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody); // TODO : Add support for non-block
-																		// statement while
+		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody);  // TODO : Add support for non-block
+		if (doWhileBodyResult.hasBlock) {                               // statement while
+            in.addTerminator(new IRGoto(doWhileBodyResult.entry));
+            currentBlock = doWhileBodyResult.exit;
+        }            
 
 		BuilderResult condResult = this.visit(ctx.condExpr);
 		if (condResult.hasBlock) {
