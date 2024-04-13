@@ -22,6 +22,12 @@ class testFrontend {
 	}
     
     @Test
+    void testDoWhile() {
+        testPattern("src/test/resources/do_while.sc");
+    }
+
+
+    @Test
     void testSimpleWhile() {
         testPattern("src/test/resources/simple_while.sc");
     }
