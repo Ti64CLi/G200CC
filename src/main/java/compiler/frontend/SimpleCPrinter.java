@@ -185,6 +185,7 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 			sb.append(" ");
 			sb.append(visit(ctx.incrExpr));
 		}
+		sb.append(")");
 		sb.append(visit(ctx.forBody));
 		return sb.toString();
 	}
