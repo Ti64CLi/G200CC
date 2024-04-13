@@ -156,7 +156,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		BuilderResult condResult = this.visit(ctx.condExpr);
 		if (condResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			in.addTerminator(new IRGoto(condResult.entry));
 			currentBlock = condResult.exit;
 		}
 
@@ -190,7 +190,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		if (ctx.initExpr != null) {
 			initResult = this.visit(ctx.initExpr);
 			if (initResult.hasBlock) {
-				currentBlock.addTerminator(new IRGoto(initResult.entry));
+				in.addTerminator(new IRGoto(initResult.entry));
 				currentBlock = initResult.exit;
 			}
 		}
@@ -200,7 +200,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		if (ctx.condExpr != null) {
 			condResult = this.visit(ctx.condExpr);
 			if (condResult.hasBlock) {
-				currentBlock.addTerminator(new IRGoto(condResult.entry));
+				inCond.addTerminator(new IRGoto(condResult.entry));
 				currentBlock = condResult.exit;
 			}
 		}
@@ -218,7 +218,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		if (ctx.incrExpr != null) {
 			BuilderResult incrResult = this.visit(ctx.incrExpr);
 			if (incrResult.hasBlock) {
-				currentBlock.addTerminator(new IRGoto(incrResult.entry));
+				forBodyResult.exit.addTerminator(new IRGoto(incrResult.entry));
 				currentBlock = incrResult.exit;
 			}
 		}
@@ -244,7 +244,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		BuilderResult condResult = this.visit(ctx.condExpr);
 		if (condResult.hasBlock) {
-			currentBlock.addTerminator(new IRGoto(condResult.entry));
+			in.addTerminator(new IRGoto(condResult.entry));
 			currentBlock = condResult.exit;
 		}
 
@@ -267,11 +267,11 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 		currentBlock = in;
 
-		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody);  // TODO : Add support for non-block
-		if (doWhileBodyResult.hasBlock) {                               // statement while
-            in.addTerminator(new IRGoto(doWhileBodyResult.entry));
-            currentBlock = doWhileBodyResult.exit;
-        }            
+		BuilderResult doWhileBodyResult = this.visit(ctx.doWhileBody); // TODO : Add support for non-block
+		if (doWhileBodyResult.hasBlock) { // statement while
+			in.addTerminator(new IRGoto(doWhileBodyResult.entry));
+			currentBlock = doWhileBodyResult.exit;
+		}
 
 		BuilderResult condResult = this.visit(ctx.condExpr);
 		if (condResult.hasBlock) {
