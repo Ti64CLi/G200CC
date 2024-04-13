@@ -6,6 +6,15 @@ import antlr.SimpleCBaseVisitor;
 import antlr.SimpleCParser;
 
 public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
+	private int tabSize = 0;
+
+	private String getTabs(int length) {
+		if (length == 0) {
+			return "";
+		} else {
+			return "\t" + getTabs(length - 1);
+		}
+	}
 
 	public String visitTranslationUnit(SimpleCParser.TranslationUnitContext ctx) {
 		StringBuilder result = new StringBuilder();
@@ -23,9 +32,9 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 				result.append(this.visit(c)).append(", ");
 			result.append(this.visit(ctx.args.get(num_args - 1)));
 		}
-		result.append(")");
+		result.append(") ");
 
-		return result + "\n" + this.visit(ctx.body) + "\n";
+		return result + this.visit(ctx.body) + "\n";
 
 	}
 
@@ -51,20 +60,22 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 	@Override
 	public String visitBlockStatement(SimpleCParser.BlockStatementContext ctx) {
 		String result = "{\n";
+		tabSize += 1;
 		for (ParseTree child : ctx.statements) {
 			result += visit(child);
 		}
-		return result + "}\n";
+		tabSize -= 1;
+		return result + getTabs(tabSize) + "}\n";
 	}
 
 	@Override
 	public String visitReturnStatement(SimpleCParser.ReturnStatementContext ctx) {
-		return "return " + visit(ctx.expr) + ";\n";
+		return getTabs(tabSize) + "return " + visit(ctx.expr) + ";\n";
 	}
 
 	@Override
 	public String visitExpressionStatement(SimpleCParser.ExpressionStatementContext ctx) {
-		return visit(ctx.expr) + ";\n";
+		return getTabs(tabSize) + visit(ctx.expr) + ";\n";
 	}
 
 	@Override
@@ -146,7 +157,7 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitIfStatement(SimpleCParser.IfStatementContext ctx) {
-		String res = "if (" + visit(ctx.condExpr) + ") " + visit(ctx.thenBody);
+		String res = getTabs(tabSize) + "if (" + visit(ctx.condExpr) + ") " + visit(ctx.thenBody);
 		if (ctx.else_ != null) {
 			res += visit(ctx.else_);
 		}
@@ -155,13 +166,13 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitElseStatement(SimpleCParser.ElseStatementContext ctx) {
-		return "else " + visit(ctx.elseBody);
+		return getTabs(tabSize) + "else " + visit(ctx.elseBody);
 	}
 
 	@Override
 	public String visitForStatement(SimpleCParser.ForStatementContext ctx) {
-		StringBuilder sb = new StringBuilder("for (");
-		if (ctx.initExpr != null){
+		StringBuilder sb = new StringBuilder(getTabs(tabSize) + "for (");
+		if (ctx.initExpr != null) {
 			sb.append(visit(ctx.initExpr));
 		}
 		sb.append(";");
@@ -180,12 +191,13 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 
 	@Override
 	public String visitWhileStatement(SimpleCParser.WhileStatementContext ctx) {
-		return "while (" + visit(ctx.condExpr) + ") " + visit(ctx.whileBody);
+		return getTabs(tabSize) + "while (" + visit(ctx.condExpr) + ") " + visit(ctx.whileBody);
 	}
 
 	@Override
 	public String visitDoWhileStatement(SimpleCParser.DoWhileStatementContext ctx) {
-		return "do " + visit(ctx.doWhileBody) + " while (" + visit(ctx.condExpr) + ");";
+		return getTabs(tabSize) + "do " + visit(ctx.doWhileBody) + getTabs(tabSize) + "while (" + visit(ctx.condExpr)
+				+ ");\n";
 	}
 
 }
