@@ -17,6 +17,11 @@ class testFrontend {
 		String contentInit = Compiler.readFile(path);
 		ParseTree tree = Compiler.parse(contentInit);
 		IRTopLevel top = Compiler.frontend(tree);
+		SimpleCPrinter astPrinter = new SimpleCPrinter();
+		String genContent = astPrinter.visit(tree);
+		System.out.println("\nContent of file '" + path + "' :");
+		System.out.println(genContent);
+		System.out.println("IR representation of file '" + path + "' :");
 		System.out.println(IRExport.printIR(top));
 		assert (true);// Ok if no exception before
 	}
