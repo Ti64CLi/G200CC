@@ -83,7 +83,7 @@ public class IRImport extends IRTXTBaseVisitor<IRObject> {
 	
 	public IRType visitIrType(IrTypeContext ctx) {
 		return switch(ctx) {
-			case IRTXTParser.VoidTypeContext st -> null;
+			case IRTXTParser.VoidTypeContext st -> IRType.VOID;
 			case IRTXTParser.IRINTContext st -> IRType.INT;
 			case IRTXTParser.IRUINTContext st -> IRType.UINT;
 			case IRTXTParser.IRCHARContext st -> IRType.CHAR;
@@ -128,7 +128,7 @@ public class IRImport extends IRTXTBaseVisitor<IRObject> {
 			argTypes.add(visitIrType(oneArg.type));
 		}
 		
-		IRFunction result = new IRFunction(ctx.name.getText(), IRType.CHAR, argTypes);
+		IRFunction result = new IRFunction(ctx.name.getText(), visitIrType(ctx.retType), argTypes);
 		
 		//We register the function
 		this.idToFuncMap.put(ctx.name.getText(), result);

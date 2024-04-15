@@ -108,6 +108,12 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		// We connect the result with the entry block and seal the body
 		entryBlock.addTerminator(new IRGoto(body.entry));
 
+		// Allow for omitting return statement in case of void functions
+		// FIXME : Surely there is a better way to do this, right now we are returning a random IRValue
+		if (!body.exit.hasTerminator() && translateType(ctx.returnType) == IRType.VOID) {
+			body.exit.addTerminator(new IRReturn(new IRValue(IRType.VOID, null)));
+		}
+
 		// Don't care about the value returned
 		return null;
 	}

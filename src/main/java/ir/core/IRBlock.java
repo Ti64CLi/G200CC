@@ -24,9 +24,13 @@ public class IRBlock implements IRVisitableObject {
         containingFunction = f;
     }
 
+    public boolean hasTerminator() {
+        return !operations.isEmpty() && operations.getLast() instanceof IRTerminator;
+    }
+
     public IRTerminator getTerminator() {
-        assert (operations.get(operations.size() - 1) instanceof IRTerminator);
-        return (IRTerminator) operations.get(operations.size() - 1);
+        assert (!operations.isEmpty() && operations.getLast() instanceof IRTerminator);
+        return (IRTerminator) operations.getLast();
     }
 
     public void addTerminator(IRTerminator t) {
